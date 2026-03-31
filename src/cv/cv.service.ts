@@ -1,26 +1,73 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Cv } from './entities/cv.entity';
+import { Skill } from '../skill/entities/skill.entity';
+import { User } from '../user/entities/user.entity';
 import { CreateCvDto } from './dto/create-cv.dto';
 import { UpdateCvDto } from './dto/update-cv.dto';
 
 @Injectable()
 export class CvService {
-  create(createCvDto: CreateCvDto) {
-    return 'This action adds a new cv';
-  }
+    constructor(
+        @InjectRepository(Cv)
+        private cvRepository: Repository<Cv>,
 
-  findAll() {
-    return `This action returns all cv`;
-  }
+        @InjectRepository(Skill)
+        private skillRepository: Repository<Skill>,
 
-  findOne(id: number) {
-    return `This action returns a #${id} cv`;
-  }
+        @InjectRepository(User)
+        private userRepository: Repository<User>,  
+    ) { }
 
-  update(id: number, updateCvDto: UpdateCvDto) {
-    return `This action updates a #${id} cv`;
-  }
+    async findAll(): Promise<Cv[]> {
+        return this.cvRepository.find({ relations: ['skills', 'user'] }); 
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} cv`;
-  }
-}
+    async findOne(id: number): Promise<Cv> {
+        const cv = await this.cvRepository.findOne({ 
+            where: { id }, 
+            relations: ['skills', 'user'] 
+        });
+        if (!cv) throw new NotFoundException('CV introuvable');
+        return cv;
+    }
+
+    async create(createCvDto: CreateCvDto): Promise<Cv> {
+        const cv = this.cvRepository.create(createCvDto);
+
+        if (createCvDto.skillIds) {
+            cv.skills = await this.skillRepository.findByIds(createCvDto.skillIds);
+        }
+
+        if (createCvDto.userId) {
+            const user = await this.userRepository.findOne({ where: { id: createCvDto.userId } });
+            if (!user) throw new NotFoundException('Utilisateur introuvable');
+            cv.user = user;
+        }
+
+        return this.cvRepository.save(cv);
+    }
+
+    async update(id: number, updateCvDto: UpdateCvDto): Promise<Cv> {
+        const cv = await this.findOne(id);
+        Object.assign(cv, updateCvDto);
+
+        if (updateCvDto.skillIds) {
+            cv.skills = await this.skillRepository.findByIds(updateCvDto.skillIds);
+        }
+
+        if (updateCvDto.userId) {
+            const user = await this.userRepository.findOne({ where: { id: updateCvDto.userId } });
+            if (!user) throw new NotFoundException('Utilisateur introuvable');
+            cv.user = user;
+        }
+
+        return this.cvRepository.save(cv);
+    }
+
+    async remove(id: number): Promise<void> {
+        const cv = await this.findOne(id);
+        await this.cvRepository.remove(cv);
+    }
+} 

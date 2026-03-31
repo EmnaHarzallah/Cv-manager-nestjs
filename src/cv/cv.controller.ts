@@ -7,11 +7,6 @@ import { UpdateCvDto } from './dto/update-cv.dto';
 export class CvController {
   constructor(private readonly cvService: CvService) {}
 
-  @Post()
-  create(@Body() createCvDto: CreateCvDto) {
-    return this.cvService.create(createCvDto);
-  }
-
   @Get()
   findAll() {
     return this.cvService.findAll();
@@ -20,6 +15,11 @@ export class CvController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.cvService.findOne(+id);
+  }
+
+  @Post()
+  create(@Body() createCvDto: CreateCvDto) {
+    return this.cvService.create(createCvDto);
   }
 
   @Patch(':id')

@@ -15,17 +15,17 @@ import { SkillModule } from './skill/skill.module';
       host: 'localhost',
       port: 3306,
       username: 'root',
-      password: '',
+      password: '0000',
       database: 'cv_db',
       entities: [Cv, User, Skill],
       synchronize: true,
-         }), 
-         CvModule,
-         UserModule,
-         SkillModule,
+    }),
+    CvModule,
+    UserModule,
+    SkillModule,
   ],
-      
+
   controllers: [AppController],
   providers: [AppService],
-   })
+})
 export class AppModule {}
