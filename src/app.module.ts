@@ -18,14 +18,14 @@ import { SkillModule } from './skill/skill.module';
       password: '585',
       database: 'cv_db',
       entities: [Cv, User, Skill],
-      synchronize: true,
-         }), 
-         CvModule,
-         UserModule,
-         SkillModule,
+      synchronize: true,//met à jour la base de données en fonction des entités à chaque démarrage de l'application (ne pas utiliser en production)
+    }),
+    CvModule,
+    UserModule,
+    SkillModule,
   ],
-      
+
   controllers: [AppController],
   providers: [AppService],
-   })
+})
 export class AppModule {}

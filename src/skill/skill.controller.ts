@@ -7,11 +7,6 @@ import { UpdateSkillDto } from './dto/update-skill.dto';
 export class SkillController {
   constructor(private readonly skillService: SkillService) {}
 
-  @Post()
-  create(@Body() createSkillDto: CreateSkillDto) {
-    return this.skillService.create(createSkillDto);
-  }
-
   @Get()
   findAll() {
     return this.skillService.findAll();
@@ -20,6 +15,11 @@ export class SkillController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.skillService.findOne(+id);
+  }
+
+  @Post()
+  create(@Body() createSkillDto: CreateSkillDto) {
+    return this.skillService.create(createSkillDto);
   }
 
   @Patch(':id')
