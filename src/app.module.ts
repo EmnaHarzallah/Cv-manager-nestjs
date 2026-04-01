@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Cv } from './cv/entities/cv.entity';
 import { User } from './user/entities/user.entity';
@@ -8,24 +8,35 @@ import { AppService } from './app.service';
 import { CvModule } from './cv/cv.module';
 import { UserModule } from './user/user.module';
 import { SkillModule } from './skill/skill.module';
+import { AuthMiddleware } from './cv/middleware/auth.middleware';
+
 @Module({
-  imports: [//contient les modules dont mon module a besoin pour fonctionner
+  imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
-      port: 3306, //port mysql
+      port: 3306,
       username: 'root',
       password: '585',
       database: 'cv_db',
       entities: [Cv, User, Skill],
-      synchronize: true,//met à jour la base de données en fonction des entités à chaque démarrage de l'application (ne pas utiliser en production)
+      synchronize: true,
     }),
     CvModule,
     UserModule,
     SkillModule,
   ],
-
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .forRoutes(
+        { path: 'cv', method: RequestMethod.POST },
+        { path: 'cv/:id', method: RequestMethod.PATCH },
+        { path: 'cv/:id', method: RequestMethod.DELETE },
+      );
+  }
+}

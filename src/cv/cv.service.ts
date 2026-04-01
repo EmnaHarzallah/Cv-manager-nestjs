@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cv } from './entities/cv.entity';
@@ -34,41 +34,43 @@ export class CvService {
         return cv;
     }
 
-    async create(createCvDto: CreateCvDto): Promise<Cv> {
+    async create(createCvDto: CreateCvDto, userId: number): Promise<Cv> {
         const cv = this.cvRepository.create(createCvDto);
+        
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user) throw new NotFoundException('Utilisateur introuvable');
+        cv.user = user;
 
         if (createCvDto.skillIds) {
             cv.skills = await this.skillRepository.findByIds(createCvDto.skillIds);
         }
 
-        if (createCvDto.userId) {
-            const user = await this.userRepository.findOne({ where: { id: createCvDto.userId } });
-            if (!user) throw new NotFoundException('Utilisateur introuvable');
-            cv.user = user;
-        }
-
         return this.cvRepository.save(cv);
     }
 
-    async update(id: number, updateCvDto: UpdateCvDto): Promise<Cv> {
+    async update(id: number, updateCvDto: UpdateCvDto, userId: number): Promise<Cv> {
         const cv = await this.findOne(id);
+        
+        if (cv.user.id !== userId) {
+            throw new UnauthorizedException('Vous n\'êtes pas le propriétaire de ce CV');
+        }
+
         Object.assign(cv, updateCvDto);
 
         if (updateCvDto.skillIds) {
             cv.skills = await this.skillRepository.findByIds(updateCvDto.skillIds);
         }
 
-        if (updateCvDto.userId) {
-            const user = await this.userRepository.findOne({ where: { id: updateCvDto.userId } });
-            if (!user) throw new NotFoundException('Utilisateur introuvable');
-            cv.user = user;
-        }
-
         return this.cvRepository.save(cv);
     }
 
-    async remove(id: number): Promise<void> {
+    async remove(id: number, userId: number): Promise<void> {
         const cv = await this.findOne(id);
+
+        if (cv.user.id !== userId) {
+            throw new UnauthorizedException('Vous n\'êtes pas le propriétaire de ce CV');
+        }
+
         await this.cvRepository.remove(cv);
     }
 
@@ -111,9 +113,8 @@ export class CvService {
                 cin: faker.number.int({ min: 10000000, max: 99999999 }).toString(),
                 job: faker.person.jobTitle(),
                 path: faker.system.filePath(),
-                userId: savedUser.id,
                 skillIds: skills.map(s => s.id)
-            });
+            }, savedUser.id);
             cvs.push(cv);
         }
         return cvs;

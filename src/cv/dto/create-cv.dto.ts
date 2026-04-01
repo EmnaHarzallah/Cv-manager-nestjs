@@ -23,8 +23,4 @@ export class CreateCvDto {
     @IsArray()
     @IsNumber({}, { each: true })
     skillIds?: number[];
-
-    @IsOptional()
-    @IsNumber({}, { each: true })
-    userId?: number;
 } 

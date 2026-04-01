@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
 import { CvService } from './cv.service';
 import { CreateCvDto } from './dto/create-cv.dto';
 import { UpdateCvDto } from './dto/update-cv.dto';
@@ -18,17 +18,17 @@ export class CvController {
   }
 
   @Post()
-  create(@Body() createCvDto: CreateCvDto) {
-    return this.cvService.create(createCvDto);
+  create(@Body() createCvDto: CreateCvDto, @Req() req: any) {
+    return this.cvService.create(createCvDto, req.userId);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCvDto: UpdateCvDto) {
-    return this.cvService.update(+id, updateCvDto);
+  update(@Param('id') id: string, @Body() updateCvDto: UpdateCvDto, @Req() req: any) {
+    return this.cvService.update(+id, updateCvDto, req.userId);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cvService.remove(+id);
+  remove(@Param('id') id: string, @Req() req: any) {
+    return this.cvService.remove(+id, req.userId);
   }
 }
