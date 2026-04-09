@@ -1,0 +1,17 @@
+commit f95de4ad67e634497f3d2ba56272f98d1d12192b
+Author: Amiralahiani <amira.lahiani@insat.ucar.tn>
+Date:   Wed Apr 1 19:24:45 2026 +0100
+
+    implémentation du système complet d’authentification (inscription, login, JWT)
+
+M	package-lock.json
+M	package.json
+M	src/app.module.ts
+A	src/auth/auth.controller.spec.ts
+A	src/auth/auth.controller.ts
+A	src/auth/auth.module.ts
+A	src/auth/auth.service.spec.ts
+A	src/auth/auth.service.ts
+A	src/auth/dto/login.dto.ts
+A	src/auth/dto/register.dto.ts
+A	src/auth/jwt.strategy.ts

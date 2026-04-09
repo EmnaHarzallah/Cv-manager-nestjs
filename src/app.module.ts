@@ -15,8 +15,8 @@ import { AuthModule } from './auth/auth.module';
       type: 'mysql',
       host: 'localhost',
       port: 3306, //port mysql
-      username: 'cv_user',
-      password: 'cv-pass',
+      username: 'root',
+      password: 'Ronaldo2023',
       database: 'cv_db',
       entities: [Cv, User, Skill],
       synchronize: true,//met à jour la base de données en fonction des entités à chaque démarrage de l'application (ne pas utiliser en production)
@@ -30,4 +30,4 @@ import { AuthModule } from './auth/auth.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

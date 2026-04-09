@@ -1,0 +1,5 @@
+a8d94ef - create JwtAuthGuard, RolesGuard and Roles decorator - protect CV routes with guards - implement role-based access (Admin vs User) - add ownership check for update and delete - setup auth infrastructure (strategy and module)
+697aed7 -seed setup with faker + db cleanup
+045d435  commit avant pull
+be1c551 CRUD CVs & Skills ### Commit messages add CreateCvDto and UpdateCvDto add CreateSkillDto and UpdateSkillDto implement CV service CRUD methods implement Skill service CRUD methods implement CV controller routes implement Skill controller routes
+7c01eae - initialize NestJS project - generate cv, user, skill resources - define CV entity with columns -define User entity with columns -define Skill entity with columns - add relations between entities

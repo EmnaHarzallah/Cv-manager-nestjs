@@ -1,0 +1,5 @@
+* main
+  remotes/origin/HEAD -> origin/main
+  remotes/origin/auth
+  remotes/origin/authMiddleware
+  remotes/origin/main

@@ -25,6 +25,13 @@ export class CvService {
         return this.cvRepository.find({ relations: ['skills', 'user'] }); 
     }
 
+    async findByUser(userId: number): Promise<Cv[]> {
+        return this.cvRepository.find({ 
+            where: { user: { id: userId } },
+            relations: ['skills', 'user'] 
+        });
+    }
+
     async findOne(id: number): Promise<Cv> {
         const cv = await this.cvRepository.findOne({ 
             where: { id }, 
@@ -34,15 +41,16 @@ export class CvService {
         return cv;
     }
 
-    async create(createCvDto: CreateCvDto): Promise<Cv> {
+    async create(createCvDto: CreateCvDto, userId?: number): Promise<Cv> {
         const cv = this.cvRepository.create(createCvDto);
 
         if (createCvDto.skillIds) {
             cv.skills = await this.skillRepository.findByIds(createCvDto.skillIds);
         }
 
-        if (createCvDto.userId) {
-            const user = await this.userRepository.findOne({ where: { id: createCvDto.userId } });
+        const effectiveUserId = userId || createCvDto.userId;
+        if (effectiveUserId) {
+            const user = await this.userRepository.findOne({ where: { id: effectiveUserId } });
             if (!user) throw new NotFoundException('Utilisateur introuvable');
             cv.user = user;
         }
@@ -50,8 +58,14 @@ export class CvService {
         return this.cvRepository.save(cv);
     }
 
-    async update(id: number, updateCvDto: UpdateCvDto): Promise<Cv> {
+    async update(id: number, updateCvDto: UpdateCvDto, userId?: number): Promise<Cv> {
         const cv = await this.findOne(id);
+        
+        // Ownership check if userId is provided
+        if (userId && cv.user && cv.user.id !== userId) {
+            throw new Error('Vous n\'êtes pas autorisé à modifier ce CV');
+        }
+
         Object.assign(cv, updateCvDto);
 
         if (updateCvDto.skillIds) {
@@ -67,8 +81,14 @@ export class CvService {
         return this.cvRepository.save(cv);
     }
 
-    async remove(id: number): Promise<void> {
+    async remove(id: number, userId?: number): Promise<void> {
         const cv = await this.findOne(id);
+        
+        // Ownership check if userId is provided
+        if (userId && cv.user && cv.user.id !== userId) {
+            throw new Error('Vous n\'êtes pas autorisé à supprimer ce CV');
+        }
+
         await this.cvRepository.remove(cv);
     }
 
