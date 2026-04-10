@@ -1,6 +1,0 @@
-f95de4a implémentation du système complet d’authentification (inscription, login, JWT)
-697aed7 -seed setup with faker + db cleanup
-045d435  commit avant pull
-be1c551 CRUD CVs & Skills ### Commit messages add CreateCvDto and UpdateCvDto add CreateSkillDto and UpdateSkillDto implement CV service CRUD methods implement Skill service CRUD methods implement CV controller routes implement Skill controller routes
-7c01eae - initialize NestJS project - generate cv, user, skill resources - define CV entity with columns -define User entity with columns -define Skill entity with columns - add relations between entities
-ad2341f first commit
