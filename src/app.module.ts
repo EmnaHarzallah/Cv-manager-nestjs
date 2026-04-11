@@ -16,7 +16,7 @@ import { AuthModule } from './auth/auth.module';
       host: 'localhost',
       port: 3306, //port mysql
       username: 'root',
-      password: 'Ronaldo2023',
+      password: process.env.DB_PASSWORD || '', // Mot de passe sécurisé (via variables d'environnement)
       database: 'cv_db',
       entities: [Cv, User, Skill],
       synchronize: true,//met à jour la base de données en fonction des entités à chaque démarrage de l'application (ne pas utiliser en production)
